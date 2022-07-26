@@ -1,0 +1,427 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "## VM Performance Data"
+      },
+      "name": "text - 0"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{Subscription}"
+        ],
+        "parameters": [
+          {
+            "id": "1f74ed9a-e3ed-498d-bd5b-f68f3836a117",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscription",
+            "label": "Subscriptions",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "value": [
+              "/subscriptions/8c7cdc7a-79c8-468d-80bb-54830d9c2486"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "includeAll": false,
+              "showDefault": false
+            }
+          },
+          {
+            "id": "b616a3a3-4271-4208-b1a9-a92a78efed08",
+            "version": "KqlParameterItem/1.0",
+            "name": "ResourceGroups",
+            "label": "Resource groups",
+            "type": 2,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "Resources\r\n| summarize by resourceGroup\r\n| order by resourceGroup asc\r\n| project id=resourceGroup, resourceGroup",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "value": [
+              "value::all"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "selectAllValue": "*"
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "0e85e0e4-a7e8-4ea8-b291-e444c317843a",
+            "version": "KqlParameterItem/1.0",
+            "name": "ResourceTypes",
+            "label": "Resource types",
+            "type": 7,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where \"*\" in ({ResourceGroups}) or resourceGroup in ({ResourceGroups})\r\n| summarize by type\r\n| project type, label=type\r\n",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "value": [
+              "microsoft.operationalinsights/workspaces"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "selectAllValue": "*"
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "f60ea0a0-3703-44ca-a59b-df0246423f41",
+            "version": "KqlParameterItem/1.0",
+            "name": "Resources",
+            "type": 5,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "Resources\r\n| where \"*\" in ({ResourceTypes}) or type in~({ResourceTypes})\r\n| where '*' in~({ResourceGroups}) or resourceGroup in~({ResourceGroups}) \r\n| order by name asc\r\n| extend Rank = row_number()\r\n| project value = id, label = name, selected = Rank <= 10, group = resourceGroup",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "value": [
+              "/subscriptions/8c7cdc7a-79c8-468d-80bb-54830d9c2486/resourceGroups/monitoring-sample-rg/providers/Microsoft.OperationalInsights/workspaces/monitoring-sample-ws"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "selectAllValue": "*",
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          },
+          {
+            "id": "c605495e-7131-408e-8bd1-d5974e402395",
+            "version": "KqlParameterItem/1.0",
+            "name": "VirtualMachine",
+            "label": "Virtual Machine",
+            "type": 5,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.compute/virtualmachines'\r\n\t| order by name asc\r\n\t| extend Rank = row_number()\r\n\t| project value = id, label = id, selected = Rank <= 25",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          }
+        ],
+        "style": "pills",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "name": "parameters - 2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Perf\r\n| where CounterName == 'Available MBytes'\r\n| summarize CounterValue = avg(CounterValue) by Computer, _ResourceId\r\n| extend ResourceGroup = extract(@'/subscriptions/.+/resourcegroups/(.+)/providers/microsoft.compute/virtualmachines/.+', 1, _ResourceId)\r\n| extend ResourceGroup = iff(ResourceGroup == '', 'On-premises computers', ResourceGroup), Id = strcat(_ResourceId, '::', Computer)",
+        "size": 0,
+        "timeContext": {
+          "durationMs": 604800000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Resources}"
+        ],
+        "visualization": "graph",
+        "graphSettings": {
+          "type": 2,
+          "topContent": {
+            "columnMatch": "Computer",
+            "formatter": 1
+          },
+          "centerContent": {
+            "columnMatch": "CounterValue",
+            "formatter": 12,
+            "formatOptions": {
+              "palette": "blue"
+            },
+            "numberFormat": {
+              "unit": 4,
+              "options": {
+                "style": "decimal",
+                "maximumFractionDigits": 1,
+                "maximumSignificantDigits": 3
+              }
+            }
+          },
+          "nodeIdField": "Id",
+          "graphOrientation": 3,
+          "showOrientationToggles": false,
+          "nodeSize": null,
+          "staticNodeSize": 100,
+          "colorSettings": {
+            "nodeColorField": "CounterValue",
+            "type": 4,
+            "heatmapPalette": "redGreen",
+            "heatmapMin": 100,
+            "heatmapMax": 2000
+          },
+          "hivesMargin": 5
+        }
+      },
+      "name": "query - 1"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Perf\r\n| where CounterName == \"% Processor Time\"\r\n| where ObjectName == \"Processor\"\r\n| summarize CounterValue = avg(CounterValue) by bin(TimeGenerated, 30min), Computer, _ResourceId\r\n| extend ResourceGroup = extract(@'/subscriptions/.+/resourcegroups/(.+)/providers/microsoft.compute/virtualmachines/.+', 1, _ResourceId)\r\n// | summarize avg(CounterValue) by bin(TimeGenerated, 15min), Computer, _ResourceId // bin is used to set the time grain to 15 minutes\r\n// | render timechart",
+        "size": 0,
+        "aggregation": 2,
+        "timeContext": {
+          "durationMs": 1800000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Resources}"
+        ],
+        "visualization": "graph",
+        "graphSettings": {
+          "type": 2,
+          "topContent": {
+            "columnMatch": "Computer",
+            "formatter": 1
+          },
+          "centerContent": {
+            "columnMatch": "CounterValue",
+            "formatter": 12,
+            "formatOptions": {
+              "palette": "none"
+            },
+            "numberFormat": {
+              "unit": 1,
+              "options": {
+                "style": "decimal",
+                "maximumFractionDigits": 2,
+                "maximumSignificantDigits": 3
+              }
+            }
+          },
+          "nodeIdField": "Computer",
+          "graphOrientation": 3,
+          "showOrientationToggles": false,
+          "nodeSize": null,
+          "staticNodeSize": 100,
+          "colorSettings": {
+            "nodeColorField": "CounterValue",
+            "type": 4,
+            "heatmapPalette": "greenRed",
+            "heatmapMin": 0,
+            "heatmapMax": 100
+          },
+          "hivesMargin": 5
+        }
+      },
+      "name": "query - 3"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "InsightsMetrics\r\n| where TimeGenerated > ago(1h)\r\n| where Origin == \"vm.azm.ms\"\r\n| where Namespace == \"Computer\"\r\n| where Name == \"Heartbeat\"\r\n| summarize heartbeat_count = count() by bin(TimeGenerated, 5m), Computer\r\n| extend alive=iff(heartbeat_count > 2, 1.0, 0.0) //computer considered \"down\" if it has 2 or fewer heartbeats in 5 min interval\r\n| project TimeGenerated, alive, Computer\r\n| render timechart with (ymin = 0, ymax = 1)",
+        "size": 0,
+        "timeContext": {
+          "durationMs": 3600000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Resources}"
+        ],
+        "visualization": "linechart"
+      },
+      "name": "query - 5"
+    },
+    {
+      "type": 10,
+      "content": {
+        "chartId": "workbooka3f6f112-788f-45b6-82cc-941ebd508307",
+        "version": "MetricsItem/2.0",
+        "size": 2,
+        "chartType": -3,
+        "resourceType": "microsoft.compute/virtualmachines",
+        "metricScope": 0,
+        "resourceParameter": "VirtualMachine",
+        "resourceIds": [
+          "{VirtualMachine}"
+        ],
+        "timeContext": {
+          "durationMs": 3600000
+        },
+        "metrics": [
+          {
+            "namespace": "microsoft.compute/virtualmachines",
+            "metric": "microsoft.compute/virtualmachines--Percentage CPU",
+            "aggregation": 4,
+            "columnName": "Percentage CPU"
+          }
+        ],
+        "graphSettings": {
+          "type": 2,
+          "topContent": {
+            "columnMatch": "Name",
+            "formatter": 13,
+            "formatOptions": {
+              "linkTarget": "Resource",
+              "showIcon": false
+            }
+          },
+          "centerContent": {
+            "columnMatch": "Percentage CPU",
+            "formatter": 12,
+            "formatOptions": {
+              "palette": "blue",
+              "linkTarget": "WorkbookTemplate",
+              "linkIsContextBlade": true,
+              "workbookContext": {
+                "componentIdSource": "column",
+                "componentId": "Name",
+                "resourceIdsSource": "workbook",
+                "templateIdSource": "column",
+                "templateId": "Name",
+                "typeSource": "static",
+                "type": "Community-Workbooks/Virtual Machines/Virtual machine details",
+                "gallerySource": "static",
+                "gallery": "microsoft.compute/virtualmachines",
+                "locationSource": "default"
+              }
+            },
+            "numberFormat": {
+              "unit": 1,
+              "options": {
+                "style": "decimal",
+                "minimumIntegerDigits": 2,
+                "minimumFractionDigits": 1,
+                "maximumFractionDigits": 1,
+                "minimumSignificantDigits": 1,
+                "maximumSignificantDigits": 2
+              }
+            }
+          },
+          "hivesContent": {
+            "columnMatch": "Subscription",
+            "formatter": 13,
+            "formatOptions": {
+              "linkTarget": "Resource",
+              "showIcon": false
+            }
+          },
+          "nodeIdField": "Name",
+          "graphOrientation": 3,
+          "showOrientationToggles": false,
+          "nodeSize": null,
+          "staticNodeSize": 100,
+          "colorSettings": {
+            "nodeColorField": "Percentage CPU",
+            "type": 4,
+            "heatmapPalette": "greenRed",
+            "heatmapMin": 10,
+            "heatmapMax": 80,
+            "emptyValueColor": "gray"
+          },
+          "groupByField": "Subscription",
+          "hivesMargin": 5
+        },
+        "gridSettings": {
+          "rowLimit": 10000
+        }
+      },
+      "name": "metric - 5"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "{\"version\":\"AzureHealthQuery/1.0\",\"queryType\":\"Detailed\"}",
+        "size": 0,
+        "queryType": 4,
+        "resourceType": "microsoft.compute/virtualmachines",
+        "crossComponentResources": [
+          "{VirtualMachine}"
+        ],
+        "visualization": "graph",
+        "graphSettings": {
+          "type": 2,
+          "topContent": {
+            "columnMatch": "Availability state",
+            "formatter": 1
+          },
+          "centerContent": {
+            "columnMatch": "Name",
+            "formatter": 13,
+            "formatOptions": {
+              "linkTarget": null,
+              "showIcon": true
+            }
+          },
+          "bottomContent": {
+            "columnMatch": "Reason type",
+            "formatter": 1
+          },
+          "nodeIdField": "Name",
+          "graphOrientation": 3,
+          "showOrientationToggles": false,
+          "nodeSize": null,
+          "staticNodeSize": 100,
+          "colorSettings": {
+            "nodeColorField": "Availability state",
+            "type": 3,
+            "thresholdsGrid": [
+              {
+                "operator": "==",
+                "thresholdValue": "Available",
+                "representation": "green"
+              },
+              {
+                "operator": "Default",
+                "thresholdValue": null,
+                "representation": "orange"
+              }
+            ]
+          },
+          "hivesMargin": 5
+        }
+      },
+      "name": "query - 6"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

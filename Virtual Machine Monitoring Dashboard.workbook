@@ -1,0 +1,1011 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "## Virtual Machine Monitoring"
+      },
+      "name": "text - 0"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{Subscription}"
+        ],
+        "parameters": [
+          {
+            "id": "1f74ed9a-e3ed-498d-bd5b-f68f3836a117",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscription",
+            "label": "Subscriptions",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "value": [
+              "/subscriptions/7eeb7ef4-578e-4e5a-bcfd-a9a5af36d451",
+              "/subscriptions/8c7cdc7a-79c8-468d-80bb-54830d9c2486"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "includeAll": true,
+              "showDefault": false
+            }
+          },
+          {
+            "id": "c605495e-7131-408e-8bd1-d5974e402395",
+            "version": "KqlParameterItem/1.0",
+            "name": "VirtualMachines",
+            "label": "Virtual Machines",
+            "type": 5,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.compute/virtualmachines'\r\n\t| order by name asc\r\n\t| extend Rank = row_number()\r\n\t| project value = id, label = id, selected = Rank <= 25",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          }
+        ],
+        "style": "pills",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "name": "parameters - 2"
+    },
+    {
+      "type": 11,
+      "content": {
+        "version": "LinkItem/1.0",
+        "style": "tabs",
+        "links": [
+          {
+            "id": "c70538a8-b319-4e3a-b022-c60b163716d3",
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "Overview",
+            "subTarget": "Overview",
+            "style": "link"
+          },
+          {
+            "id": "026edb7c-399a-41d6-9c43-51d72d4af607",
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "Key metrics",
+            "subTarget": "Details",
+            "style": "link"
+          },
+          {
+            "id": "3260099b-713c-408c-946f-b31c00621019",
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "Regions",
+            "subTarget": "Regions",
+            "style": "link"
+          },
+          {
+            "id": "2c2df94a-3333-45b3-8d50-c35c0e22f12b",
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "Resource health",
+            "subTarget": "Health",
+            "style": "link"
+          }
+        ]
+      },
+      "name": "Tabs"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "## Virtual Machine CPU Usage",
+        "style": "info"
+      },
+      "name": "text - 4"
+    },
+    {
+      "type": 10,
+      "content": {
+        "chartId": "workbooka3f6f112-788f-45b6-82cc-941ebd508307",
+        "version": "MetricsItem/2.0",
+        "size": 2,
+        "chartType": -3,
+        "resourceType": "microsoft.compute/virtualmachines",
+        "metricScope": 0,
+        "resourceParameter": "VirtualMachines",
+        "resourceIds": [
+          "{VirtualMachines}"
+        ],
+        "timeContext": {
+          "durationMs": 3600000
+        },
+        "metrics": [
+          {
+            "namespace": "microsoft.compute/virtualmachines",
+            "metric": "microsoft.compute/virtualmachines--Percentage CPU",
+            "aggregation": 4,
+            "columnName": "Percentage CPU"
+          }
+        ],
+        "graphSettings": {
+          "type": 2,
+          "topContent": {
+            "columnMatch": "Name",
+            "formatter": 13,
+            "formatOptions": {
+              "linkTarget": "Resource",
+              "linkIsContextBlade": false,
+              "showIcon": true
+            }
+          },
+          "centerContent": {
+            "columnMatch": "Percentage CPU",
+            "formatter": 12,
+            "formatOptions": {
+              "palette": "blue",
+              "linkTarget": "WorkbookTemplate",
+              "linkIsContextBlade": true,
+              "workbookContext": {
+                "componentIdSource": "column",
+                "componentId": "Name",
+                "resourceIdsSource": "workbook",
+                "templateIdSource": "column",
+                "templateId": "Name",
+                "typeSource": "static",
+                "type": "Community-Workbooks/Virtual Machines/Virtual machine details",
+                "gallerySource": "static",
+                "gallery": "microsoft.compute/virtualmachines",
+                "locationSource": "default"
+              }
+            },
+            "numberFormat": {
+              "unit": 1,
+              "options": {
+                "style": "decimal",
+                "minimumFractionDigits": 1,
+                "maximumFractionDigits": 1,
+                "minimumSignificantDigits": 1,
+                "maximumSignificantDigits": 1
+              }
+            }
+          },
+          "hivesContent": {
+            "columnMatch": "Subscription",
+            "formatter": 13,
+            "formatOptions": {
+              "linkTarget": "Resource",
+              "showIcon": false
+            }
+          },
+          "nodeIdField": "Name",
+          "graphOrientation": 3,
+          "showOrientationToggles": false,
+          "nodeSize": null,
+          "staticNodeSize": 100,
+          "colorSettings": {
+            "nodeColorField": "Percentage CPU",
+            "type": 4,
+            "heatmapPalette": "greenRed",
+            "heatmapMin": 10,
+            "heatmapMax": 80,
+            "emptyValueColor": "gray"
+          },
+          "groupByField": "Subscription",
+          "hivesMargin": 5
+        },
+        "gridSettings": {
+          "rowLimit": 10000
+        }
+      },
+      "name": "metric - 5"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "## Virtual Machine Availability Status",
+        "style": "info"
+      },
+      "name": "text - 6"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "{\"version\":\"AzureHealthQuery/1.0\",\"queryType\":\"Detailed\"}",
+        "size": 0,
+        "queryType": 4,
+        "resourceType": "microsoft.compute/virtualmachines",
+        "crossComponentResources": [
+          "{VirtualMachines}"
+        ],
+        "visualization": "graph",
+        "graphSettings": {
+          "type": 2,
+          "topContent": {
+            "columnMatch": "Availability state",
+            "formatter": 1
+          },
+          "centerContent": {
+            "columnMatch": "Name",
+            "formatter": 13,
+            "formatOptions": {
+              "linkTarget": null,
+              "showIcon": true
+            }
+          },
+          "bottomContent": {
+            "columnMatch": "Reason type",
+            "formatter": 1
+          },
+          "nodeIdField": "Name",
+          "graphOrientation": 3,
+          "showOrientationToggles": false,
+          "nodeSize": null,
+          "staticNodeSize": 100,
+          "colorSettings": {
+            "nodeColorField": "Availability state",
+            "type": 3,
+            "thresholdsGrid": [
+              {
+                "operator": "==",
+                "thresholdValue": "Available",
+                "representation": "green"
+              },
+              {
+                "operator": "Default",
+                "thresholdValue": null,
+                "representation": "orange"
+              }
+            ]
+          },
+          "hivesMargin": 5
+        }
+      },
+      "name": "query - 6"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbookdb19a8d8-91af-44ea-951d-5ffa133b2ebe",
+              "version": "MetricsItem/2.0",
+              "size": 2,
+              "chartType": 0,
+              "resourceType": "microsoft.compute/virtualmachines",
+              "metricScope": 0,
+              "resourceParameter": "VirtualMachines",
+              "resourceIds": [
+                "{VirtualMachines}"
+              ],
+              "timeContext": {
+                "durationMs": 3600000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.compute/virtualmachines",
+                  "metric": "microsoft.compute/virtualmachines--Percentage CPU",
+                  "aggregation": 4
+                },
+                {
+                  "namespace": "microsoft.compute/virtualmachines",
+                  "metric": "microsoft.compute/virtualmachines--Disk Read Bytes",
+                  "aggregation": 1
+                },
+                {
+                  "namespace": "microsoft.compute/virtualmachines",
+                  "metric": "microsoft.compute/virtualmachines--Disk Write Bytes",
+                  "aggregation": 1
+                },
+                {
+                  "namespace": "microsoft.compute/virtualmachines",
+                  "metric": "microsoft.compute/virtualmachines--Network In Total",
+                  "aggregation": 1
+                },
+                {
+                  "namespace": "microsoft.compute/virtualmachines",
+                  "metric": "microsoft.compute/virtualmachines--Network Out Total",
+                  "aggregation": 1
+                }
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "$gen_group",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkTarget": "Resource",
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "Subscription",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Name",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Percentage CPU",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "blue",
+                      "linkTarget": "WorkbookTemplate",
+                      "linkIsContextBlade": true,
+                      "workbookContext": {
+                        "componentIdSource": "column",
+                        "componentId": "Name",
+                        "resourceIdsSource": "column",
+                        "resourceIds": "Name",
+                        "templateIdSource": "static",
+                        "templateId": "Community-Workbooks/Virtual Machines/Virtual machine details",
+                        "typeSource": "static",
+                        "type": "workbook",
+                        "gallerySource": "static",
+                        "gallery": "microsoft.compute/virtualmachines"
+                      }
+                    },
+                    "numberFormat": {
+                      "unit": 1,
+                      "options": {
+                        "style": "decimal",
+                        "maximumFractionDigits": 1
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Percentage CPU Timeline",
+                    "formatter": 21,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "blue"
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Disk Read Bytes|microsoft.compute/virtualmachines--Disk Write Bytes",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "yellow"
+                    },
+                    "numberFormat": {
+                      "unit": 2,
+                      "options": {
+                        "style": "decimal",
+                        "maximumFractionDigits": 1
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Disk Read Bytes Timeline",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Disk Write Bytes Timeline",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Network In Total|microsoft.compute/virtualmachines--Network Out Total",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 0,
+                      "palette": "orange"
+                    },
+                    "numberFormat": {
+                      "unit": 2,
+                      "options": {
+                        "style": "decimal",
+                        "maximumFractionDigits": 1
+                      }
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Network In Total Timeline",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Network Out Total Timeline",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Memory Timeline",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Available Memory Bytes",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "palette": "greenRed"
+                    },
+                    "numberFormat": {
+                      "unit": 4,
+                      "options": {
+                        "style": "decimal",
+                        "minimumIntegerDigits": 2,
+                        "minimumFractionDigits": 1,
+                        "maximumFractionDigits": 1,
+                        "minimumSignificantDigits": 1,
+                        "maximumSignificantDigits": 1
+                      }
+                    }
+                  }
+                ],
+                "rowLimit": 10000,
+                "filter": true,
+                "hierarchySettings": {
+                  "treeType": 1,
+                  "groupBy": [
+                    "Subscription"
+                  ],
+                  "expandTopLevel": true,
+                  "finalBy": "Name"
+                },
+                "labelSettings": [
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Percentage CPU",
+                    "label": "Percentage CPU (Average)"
+                  },
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Percentage CPU Timeline",
+                    "label": "Percentage CPU Timeline"
+                  },
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Disk Read Bytes",
+                    "label": "Disk Read Bytes (Sum)"
+                  },
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Disk Read Bytes Timeline",
+                    "label": "Disk Read Bytes Timeline"
+                  },
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Disk Write Bytes",
+                    "label": "Disk Write Bytes (Sum)"
+                  },
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Disk Write Bytes Timeline",
+                    "label": "Disk Write Bytes Timeline"
+                  },
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Network In Total",
+                    "label": "Network In Total (Sum)"
+                  },
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Network In Total Timeline",
+                    "label": "Network In Total Timeline"
+                  },
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Network Out Total",
+                    "label": "Network Out Total (Sum)"
+                  },
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Network Out Total Timeline",
+                    "label": "Network Out Total Timeline"
+                  },
+                  {
+                    "columnId": "Memory",
+                    "label": "Memory"
+                  },
+                  {
+                    "columnId": "Memory Timeline",
+                    "label": "Memory Timeline"
+                  }
+                ]
+              },
+              "sortBy": [],
+              "showExportToExcel": true
+            },
+            "showPin": true,
+            "name": "Azure Monitor VM Key Metrics"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "💡 _Click on the CPU utilization cells to zoom into the metrics of the virtual machine_\r\n<br />"
+            },
+            "name": "Details table tip"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "Details"
+      },
+      "name": "Details"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "{\"version\":\"AzureHealthQuery/1.0\",\"queryType\":\"Detailed\"}",
+              "size": 2,
+              "showExportToExcel": true,
+              "queryType": 4,
+              "resourceType": "microsoft.compute/virtualmachines",
+              "crossComponentResources": [
+                "{VirtualMachines}"
+              ],
+              "visualization": "graph",
+              "graphSettings": {
+                "type": 2,
+                "topContent": {
+                  "columnMatch": "Availability state",
+                  "formatter": 1,
+                  "formatOptions": {
+                    "showIcon": false
+                  }
+                },
+                "centerContent": {
+                  "columnMatch": "Name",
+                  "formatter": 13,
+                  "formatOptions": {
+                    "linkTarget": "Resource",
+                    "subTarget": "resourcehealth",
+                    "showIcon": false
+                  }
+                },
+                "bottomContent": {
+                  "columnMatch": "Reason type",
+                  "formatter": 1,
+                  "formatOptions": {
+                    "showIcon": true
+                  },
+                  "tooltipFormat": {}
+                },
+                "nodeIdField": "Name",
+                "nodeSize": null,
+                "staticNodeSize": 100,
+                "colorSettings": {
+                  "nodeColorField": "Availability state",
+                  "type": 3,
+                  "thresholdsGrid": [
+                    {
+                      "operator": "==",
+                      "thresholdValue": "Available",
+                      "representation": "green"
+                    },
+                    {
+                      "operator": "Default",
+                      "thresholdValue": null,
+                      "representation": "orange"
+                    }
+                  ]
+                },
+                "hivesMargin": 5
+              }
+            },
+            "showPin": true,
+            "name": "Resource health"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "💡 _Click on the virtual machine name to see more details about the resource health_\r\n<br />\r\n<br />\r\nLearn about [Azure resource health](https://docs.microsoft.com/en-us/azure/service-health/resource-health-overview)"
+            },
+            "name": "Resource health tip"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "Health"
+      },
+      "name": "Resource health group"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Highest CPU utilization by region",
+        "items": [
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbookdb19a8d8-91af-44ea-951d-5ffa133b2ebe",
+              "version": "MetricsItem/2.0",
+              "size": 2,
+              "chartType": -2,
+              "resourceType": "microsoft.compute/virtualmachines",
+              "metricScope": 0,
+              "resourceParameter": "VirtualMachines",
+              "resourceIds": [
+                "{VirtualMachines}"
+              ],
+              "timeContext": {
+                "durationMs": 3600000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.compute/virtualmachines",
+                  "metric": "microsoft.compute/virtualmachines--Percentage CPU",
+                  "aggregation": 4
+                }
+              ],
+              "mapSettings": {
+                "locInfo": "AzureResource",
+                "locInfoColumn": "Name",
+                "sizeSettings": "Name",
+                "sizeAggregation": "Count",
+                "legendMetric": "microsoft.compute/virtualmachines--Percentage CPU",
+                "legendAggregation": "Max",
+                "itemColorSettings": {
+                  "nodeColorField": "microsoft.compute/virtualmachines--Percentage CPU",
+                  "colorAggregation": "Max",
+                  "type": "heatmap",
+                  "heatmapPalette": "greenRed",
+                  "heatmapMin": 30,
+                  "heatmapMax": 80
+                },
+                "numberFormatSettings": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal",
+                    "maximumFractionDigits": 1
+                  }
+                }
+              },
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Percentage CPU",
+                    "formatter": 1,
+                    "numberFormat": {
+                      "unit": 1,
+                      "options": null
+                    }
+                  }
+                ],
+                "rowLimit": 10000,
+                "labelSettings": [
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Percentage CPU",
+                    "label": "Percentage CPU (Average)"
+                  },
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Percentage CPU Timeline",
+                    "label": "Percentage CPU Timeline"
+                  }
+                ]
+              },
+              "sortBy": [],
+              "exportMultipleValues": true,
+              "exportAggregateParts": true,
+              "exportedParameters": [
+                {
+                  "fieldName": "Name",
+                  "parameterName": "ResourcesInSelectedRegion",
+                  "parameterType": 1
+                }
+              ]
+            },
+            "showPin": true,
+            "name": "CPU data"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "💡 _Select a region to see details of the virtual machines in it_\r\n<br />"
+            },
+            "conditionalVisibility": {
+              "parameterName": "ResourcesInSelectedRegion",
+              "comparison": "isEqualTo"
+            },
+            "name": "Region tip"
+          },
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbook0b213afb-2aee-4fe6-9df0-96d2b608cd42",
+              "version": "MetricsItem/2.0",
+              "size": 0,
+              "chartType": 0,
+              "resourceType": "microsoft.compute/virtualmachines",
+              "metricScope": 0,
+              "resourceParameter": "VirtualMachines",
+              "resourceIds": [
+                "{VirtualMachines}"
+              ],
+              "timeContext": {
+                "durationMs": 1800000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.compute/virtualmachines",
+                  "metric": "microsoft.compute/virtualmachines--Percentage CPU",
+                  "aggregation": 4
+                }
+              ],
+              "title": "Virtual machines in selected region",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "$gen_group",
+                    "formatter": 13,
+                    "formatOptions": {
+                      "linkTarget": "Resource",
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "Subscription",
+                    "formatter": 5,
+                    "formatOptions": {
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "Name",
+                    "formatter": 5,
+                    "formatOptions": {
+                      "showIcon": true
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Percentage CPU",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "min": 30,
+                      "max": 80,
+                      "palette": "greenRed",
+                      "showIcon": true
+                    },
+                    "numberFormat": {
+                      "unit": 1,
+                      "options": {
+                        "style": "decimal",
+                        "useGrouping": false,
+                        "maximumFractionDigits": 1
+                      },
+                      "emptyValCustomText": "-"
+                    }
+                  },
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Percentage CPU Timeline",
+                    "formatter": 9,
+                    "formatOptions": {
+                      "min": 30,
+                      "max": 80,
+                      "palette": "greenRed",
+                      "showIcon": true
+                    },
+                    "numberFormat": {
+                      "unit": 1,
+                      "options": {
+                        "style": "decimal"
+                      }
+                    }
+                  }
+                ],
+                "rowLimit": 10000,
+                "filter": true,
+                "hierarchySettings": {
+                  "treeType": 1,
+                  "groupBy": [
+                    "Subscription"
+                  ],
+                  "expandTopLevel": true,
+                  "finalBy": "Name"
+                },
+                "labelSettings": [
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Percentage CPU",
+                    "label": "Percentage CPU (Average)"
+                  },
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Percentage CPU Timeline",
+                    "label": "Percentage CPU Timeline"
+                  }
+                ]
+              },
+              "sortBy": []
+            },
+            "conditionalVisibility": {
+              "parameterName": "ResourcesInSelectedRegion",
+              "comparison": "isNotEqualTo"
+            },
+            "name": "Region VM details"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "Regions"
+      },
+      "name": "Regions"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 10,
+            "content": {
+              "chartId": "workbookdb19a8d8-91af-44ea-951d-5ffa133b2ebe",
+              "version": "MetricsItem/2.0",
+              "size": 2,
+              "chartType": -3,
+              "resourceType": "microsoft.compute/virtualmachines",
+              "metricScope": 0,
+              "resourceParameter": "VirtualMachines",
+              "resourceIds": [
+                "{VirtualMachines}"
+              ],
+              "timeContext": {
+                "durationMs": 3600000
+              },
+              "metrics": [
+                {
+                  "namespace": "microsoft.compute/virtualmachines",
+                  "metric": "microsoft.compute/virtualmachines--Percentage CPU",
+                  "aggregation": 4
+                }
+              ],
+              "title": "CPU utilization of virtual machines",
+              "mapSettings": {
+                "locInfo": "AzureResource",
+                "locInfoColumn": "Name",
+                "sizeSettings": "Name",
+                "sizeAggregation": "Count",
+                "legendMetric": "microsoft.compute/virtualmachines--Percentage CPU",
+                "legendAggregation": "Max",
+                "itemColorSettings": {
+                  "nodeColorField": "microsoft.compute/virtualmachines--Percentage CPU",
+                  "colorAggregation": "Max",
+                  "type": "heatmap",
+                  "heatmapPalette": "greenRed",
+                  "heatmapMin": 30,
+                  "heatmapMax": 80
+                },
+                "numberFormatSettings": {
+                  "unit": 1,
+                  "options": {
+                    "style": "decimal",
+                    "maximumFractionDigits": 1
+                  }
+                }
+              },
+              "graphSettings": {
+                "type": 2,
+                "topContent": {
+                  "columnMatch": "Name",
+                  "formatter": 13,
+                  "formatOptions": {
+                    "linkTarget": "Resource",
+                    "showIcon": false
+                  }
+                },
+                "centerContent": {
+                  "columnMatch": "microsoft.compute/virtualmachines--Percentage CPU",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "linkTarget": "WorkbookTemplate",
+                    "linkIsContextBlade": true,
+                    "showIcon": true,
+                    "workbookContext": {
+                      "componentIdSource": "column",
+                      "componentId": "Name",
+                      "resourceIdsSource": "column",
+                      "resourceIds": "Name",
+                      "templateIdSource": "static",
+                      "templateId": "Community-Workbooks/Virtual Machines/Virtual machine details",
+                      "typeSource": "static",
+                      "type": "workbook",
+                      "gallerySource": "static",
+                      "gallery": "microsoft.compute/virtualmachines",
+                      "locationSource": "default"
+                    }
+                  },
+                  "numberFormat": {
+                    "unit": 1,
+                    "options": {
+                      "style": "decimal",
+                      "useGrouping": false,
+                      "maximumFractionDigits": 1
+                    },
+                    "emptyValCustomText": "-"
+                  }
+                },
+                "hivesContent": {
+                  "columnMatch": "Subscription",
+                  "formatter": 13,
+                  "formatOptions": {
+                    "linkTarget": "Resource",
+                    "showIcon": true
+                  }
+                },
+                "nodeIdField": "Name",
+                "nodeSize": null,
+                "staticNodeSize": 100,
+                "colorSettings": {
+                  "nodeColorField": "microsoft.compute/virtualmachines--Percentage CPU",
+                  "type": 4,
+                  "heatmapPalette": "greenRed",
+                  "heatmapMin": 30,
+                  "heatmapMax": 80,
+                  "emptyValueColor": "gray"
+                },
+                "groupByField": "Subscription",
+                "hivesMargin": 5
+              },
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "microsoft.compute/virtualmachines--Percentage CPU",
+                    "formatter": 1,
+                    "numberFormat": {
+                      "unit": 1,
+                      "options": null
+                    }
+                  }
+                ],
+                "rowLimit": 10000,
+                "filter": true,
+                "labelSettings": [
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Percentage CPU",
+                    "label": "Percentage CPU (Average)"
+                  },
+                  {
+                    "columnId": "microsoft.compute/virtualmachines--Percentage CPU Timeline",
+                    "label": "Percentage CPU Timeline"
+                  }
+                ]
+              },
+              "sortBy": [],
+              "showExportToExcel": true
+            },
+            "showPin": true,
+            "name": "CPU data"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "💡 _Click on the CPU usage metric in a cell to see more details about the virtual machine_\r\n<br />"
+            },
+            "name": "Overview tip"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "Overview"
+      },
+      "name": "Overview"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

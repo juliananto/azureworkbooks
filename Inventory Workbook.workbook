@@ -1,0 +1,142 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "# Cloud Inventory\r\n⚠️ _Select a **Resource Group** in the drop-down below_"
+      },
+      "name": "text - 0"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "1f74ed9a-e3ed-498d-bd5b-f68f3836a117",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscription",
+            "label": "Subscriptions",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "value": [
+              "/subscriptions/20c8bcb3-cc3c-4913-8ab7-c52c416a9846"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "includeAll": true,
+              "showDefault": false
+            }
+          },
+          {
+            "id": "b616a3a3-4271-4208-b1a9-a92a78efed08",
+            "version": "KqlParameterItem/1.0",
+            "name": "ResourceGroupName",
+            "label": "Resource groups",
+            "type": 2,
+            "isRequired": true,
+            "query": "Resources\r\n| summarize by resourceGroup\r\n| order by resourceGroup asc\r\n| project id=resourceGroup, resourceGroup",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "value": "jpetncwidirsg02",
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          }
+        ],
+        "style": "above",
+        "queryType": 0,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "name": "parameters - 0"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "## App Services :\r\n\r\n 💡 _Click on a resource name to go to the resource in the portal, or click on a URL to go to the web app in your browser._"
+      },
+      "name": "text - 2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Resources\r\n| where resourceGroup == '{ResourceGroupName}'\r\n| where type == 'microsoft.web/sites'\r\n| project [\"Web App\"] = id, \r\n    [\"App Service Plan\"] = tostring(properties.serverFarmId), Kind = kind, URL = strcat(\"https://\", properties.defaultHostName),  [\"SKU Name\"] = properties.sku",
+        "size": 0,
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": [
+          "value::all"
+        ],
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "URL",
+              "formatter": 7,
+              "formatOptions": {
+                "linkTarget": "Url"
+              }
+            }
+          ]
+        }
+      },
+      "name": "query - 3"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": " ## SQL Databases :\r\n\r\n 💡 _Click on a resource name to go to the resource in the portal_"
+      },
+      "name": "text - 4"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": " Resources\r\n | where resourceGroup == '{ResourceGroupName}'\r\n | where type == 'microsoft.sql/servers/databases'\r\n | where name != 'master'\r\n | project Database = id,\r\n   [\"Elastic Pool\"] = tostring(properties.elasticPoolId),\r\n   [\"SKU Name\"] = sku.name,\r\n   [\"Pricing Tier\"] = sku.tier,\r\n   Status = properties.status",
+        "size": 1,
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": [
+          "value::all"
+        ]
+      },
+      "name": "query - 5"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": " ## Virtual Machines :\r\n\r\n 💡 _Click on a Virtual Machine name to go to the resource in the portal_"
+      },
+      "name": "text - 6"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Resources\r\n | where resourceGroup == '{ResourceGroupName}'\r\n | where type == 'microsoft.compute/virtualmachines'\r\n | project Name = id,\r\n   Size = properties.hardwareProfile.vmSize,\r\n   [\"OS Image\"] = strcat(properties.storageProfile.imageReference.offer, \" - \", properties.storageProfile.imageReference.sku),\r\n   associated_nic = extract(\".*/(.*)\\\"}$\", 1, tostring(properties.networkProfile.networkInterfaces[0]))\r\n | join kind = leftouter (\r\n   Resources\r\n   | where resourceGroup == '{ResourceGroupName}'\r\n   | where type == 'microsoft.network/publicipaddresses'\r\n   | project [\"Public IP Address\"] = properties.ipAddress,\r\n     associated_nic = extract(\".*/networkInterfaces/(.*?)/.*\", 1, tostring(properties.ipConfiguration.id))\r\n   ) on associated_nic\r\n | project-away associated_nic, associated_nic1",
+        "size": 1,
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": [
+          "value::all"
+        ]
+      },
+      "name": "query - 7"
+    }
+  ],
+  "fallbackResourceIds": [
+    "Azure Monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
